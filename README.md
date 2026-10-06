@@ -36,12 +36,12 @@ gerenciador_de_cursos_e_alunos/
 │
 ├── models/
 │   ├── __init__.py
-│   ├── serializavel.py
-│   ├── pessoa.py
 │   ├── aluno.py
 │   ├── curso.py
-│   ├── turma.py
-│   └── matricula.py
+│   ├── matricula.py
+│   ├── monitor.py
+│   ├── pessoa.py
+│   └── turma.py
 │
 ├── services/
 │   ├── __init__.py
@@ -64,9 +64,10 @@ gerenciador_de_cursos_e_alunos/
 │   ├── conftest.py
 │   ├── test_aluno.py
 │   ├── test_curso.py
-│   ├── test_turma.py
 │   ├── test_matricula.py
-│   └── test_relatorios.py
+│   ├── test_monitor.py
+│   ├── test_relatorios.py
+│   └── test_turma.py
 │
 ├── .gitignore
 ├── README.md
