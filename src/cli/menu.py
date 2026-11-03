@@ -2,6 +2,8 @@ from models import ErroAcademico
 from models.aluno import Aluno
 from models.curso import Curso
 from models.disciplina import Disciplina
+from models.matricula import Matricula
+from models.monitor import Monitor
 from models.turma import Turma
 from services.aluno_service import AlunoService
 from services.curso_service import CursoService, DisciplinaService
@@ -224,7 +226,22 @@ class MenuCLI:
 			self.output("-" * 52)
 			return
 		for aluno in alunos:
-			self.output(f"{aluno.matricula} — {aluno.nome_completo} | {aluno.curso} | CR {aluno.cr:.2f}")
+			perfil = "Monitor" if isinstance(aluno, Monitor) else "Aluno"
+			turmas_cursando = sorted(
+				matricula.turma.id_oferta
+				for matricula in aluno.matriculas
+				if matricula.status == Matricula.CURSANDO
+			)
+			matriculas_ativas = ", ".join(turmas_cursando) or "nenhuma"
+			linha = (
+				f"{aluno.matricula} — {aluno.nome_completo} | {aluno.curso} "
+				f"| CR {aluno.cr:.2f} | Perfil: {perfil} | Situação: {aluno.status} "
+				f"| Matrículas cursando: {matriculas_ativas}"
+			)
+			if isinstance(aluno, Monitor):
+				turmas = ", ".join(sorted(aluno.turmas_monitoradas)) or "nenhuma"
+				linha += f" | Turmas de monitoria: {turmas}"
+			self.output(linha)
 		self.output("-" * 52)
 
 	def cadastrar_aluno(self) -> None:
