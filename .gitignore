@@ -1,5 +1,32 @@
-.venv/
-.venv-*/
+# Python
 __pycache__/
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyre/
 *.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local JSON data generated at runtime
+/data/*.json
+/src/database/data/*.json
+# Legacy SQLite file left on this machine; the application now uses JSON.
+/src/database/gerenciador.db*
+*.tmp
+*.log
+
+# OS/editor
+.DS_Store
+.idea/
+.vscode/
+
+# Coverage / build artifacts
+.coverage
+.coverage.*
+htmlcov/
+build/
+dist/
