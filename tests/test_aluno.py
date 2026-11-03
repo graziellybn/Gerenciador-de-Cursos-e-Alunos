@@ -1,28 +1,27 @@
 import pytest
-
+from models import ValidacaoError
+from models.adm import Adm
 from models.aluno import Aluno
+from models.disciplina import Disciplina
+from models.matricula import Matricula
+from models.turma import Turma
 
 
-def test_criar_manipular_e_ordenar_aluno(aluno):
-	assert aluno.nome_completo == "Grazielly Bibiano"
-	assert aluno.matricula == "2026001"
-	assert aluno.curso == "Engenharia de Software"
-	assert aluno.cr == 0.0
-	assert aluno.status == "Ativo"
-	aluno.cr = 8.5
-	assert aluno.cr == 8.5
-
-	outro = Aluno("Zoe Ferreira", "2000-01-01", "zoe@ufca.edu.br", "1", "2", "Curso", cr=9.0)
-	assert aluno < outro
-	outro.cr = 8.5
-	assert aluno < outro  # Mesmo CR: desempata pelo nome.
-	assert "Grazielly Bibiano" in str(aluno)
+def test_email_invalido():
+    with pytest.raises(ValidacaoError):
+        Aluno("Ana", "2000-01-01", "ana-sem-arroba", "1", "1", "ES")
+    with pytest.raises(ValidacaoError, match="aluno.uniesquina.edu.br"):
+        Aluno("Ana", "2000-01-01", "ana@example.com", "1", "1", "ES")
+    with pytest.raises(ValidacaoError, match="adm.uniesquina.edu.br"):
+        Adm("Admin", "", "admin@example.com", "1")
 
 
-def test_aluno_rejeita_cr_invalido_e_herda_validacoes_de_pessoa(aluno):
-	with pytest.raises(ValueError):
-		aluno.cr = -1
-
-	with pytest.raises(ValueError):
-		Aluno("Grazielly Bibiano", "2000-01-01", "email-invalido", "1", "3", "Curso")
-
+def test_cr_ponderado_pela_carga_horaria(aluno):
+    forte = Turma("A", Disciplina("C1", "Disciplina 1", 60, "ES001"), "P", "2026.1", 5)
+    fraca = Turma("B", Disciplina("C2", "Disciplina 2", 30, "ES001"), "P", "2026.1", 5)
+    for turma, nota in ((forte, 10), (fraca, 4)):
+        m = Matricula(aluno, turma)
+        m.nota_1 = m.nota_2 = nota
+        m.atualizar_status()
+        aluno.registrar_matricula(m)
+    assert aluno.recalcular_cr() == pytest.approx(8.0)   # (10*60 + 4*30) / 90
