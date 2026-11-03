@@ -491,7 +491,7 @@ class Repositorio:
 
     def listar_alunos(self) -> list[Aluno]:
         registros = sorted(self._dados["alunos"], key=lambda item: item["nome_completo"].casefold())
-        return [self.buscar_aluno(r["matricula"], com_matriculas=False) for r in registros]
+        return [self.buscar_aluno(r["matricula"]) for r in registros]
 
     # Turmas
     def salvar_turma(self, turma: Turma) -> None:
