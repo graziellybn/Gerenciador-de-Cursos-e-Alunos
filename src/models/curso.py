@@ -1,26 +1,52 @@
-class Curso:
+from models import ValidacaoError
 
-    def __init__(self, codigo: str, nome: str, carga_horaria: int, tipo: str = "Obrigatória", 
-        pre_requisitos: list = None):
+
+class Curso:
+    """Representa um curso de graduação e seu identificador principal."""
+
+    def __init__(self, codigo: str, nome: str):
+        """Cria um curso validando código e nome antes de guardar os dados."""
         self.codigo = codigo
         self.nome = nome
-        self.carga_horaria = carga_horaria  
-        self.tipo = tipo
-        self.pre_requisitos = pre_requisitos if pre_requisitos is not None else []
 
     @property
-    def carga_horaria(self) -> int:
-        return self._carga_horaria
+    def codigo(self) -> str:
+        """Retorna o código do curso em maiúsculas, como referência do catálogo."""
+        return self._codigo
 
-    @carga_horaria.setter
-    def carga_horaria(self, valor: int):
-        if not isinstance(valor, int) or valor <= 0:
-            raise ValueError("A carga horária deve ser um número inteiro positivo.")
-        self._carga_horaria = valor
+    @codigo.setter
+    def codigo(self, valor: str) -> None:
+        """Valida que o código não fique vazio e padroniza para letras maiúsculas."""
+        if not isinstance(valor, str) or not valor.strip():
+            raise ValidacaoError("O código do curso não pode estar em branco.")
+        self._codigo = valor.strip().upper()
 
-    def adicionar_pre_requisito(self, codigo_disciplina: str):
-        if codigo_disciplina not in self.pre_requisitos:
-            self.pre_requisitos.append(codigo_disciplina)
+    @property
+    def nome(self) -> str:
+        """Retorna o nome oficial do curso."""
+        return self._nome
+
+    @nome.setter
+    def nome(self, valor: str) -> None:
+        """Valida que o nome do curso tenha texto útil e não fique vazio."""
+        if not isinstance(valor, str) or not valor.strip():
+            raise ValidacaoError("O nome do curso não pode estar em branco.")
+        self._nome = valor.strip()
+
+    def __eq__(self, outro: object) -> bool:
+        """Compara cursos pela matrícula/código do curso, que é a chave principal."""
+        if not isinstance(outro, Curso):
+            return NotImplemented
+        return self.codigo == outro.codigo
+
+    def __hash__(self) -> int:
+        """Permite usar o curso em estruturas como sets e chaves de dicionários."""
+        return hash(self.codigo)
 
     def __str__(self) -> str:
-        return f"{self.codigo} - {self.nome} ({self.carga_horaria}h) | {self.tipo}"    
+        """Mostra uma leitura simples do curso para uso em relatórios e console."""
+        return f"{self.codigo} - {self.nome}"
+
+    def __repr__(self) -> str:
+        """Ajuda a depurar e identificar o objeto em mensagens de erro e testes."""
+        return f"Curso(codigo={self.codigo!r}, nome={self.nome!r})"
